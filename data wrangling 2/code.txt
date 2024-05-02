@@ -1,0 +1,59 @@
+Data Wrangling II
+Create an “Academic performance” dataset of students and perform the following operations using
+Python.
+1. Scan all variables for missing values and inconsistencies. If there are missing values and/or
+inconsistencies, use any of the suitable techniques to deal with them.
+2. Scan all numeric variables for outliers. If there are outliers, use any of the suitable
+techniques to deal with them.
+3. Apply data transformations on at least one of the variables. The purpose of this
+transformation should be one of the following reasons: to change the scale for better
+understanding of the variable, to convert a non-linear relation into a linear one, or to
+decrease the skewness and convert the distribution into a normal distribution. 
+
+
+1.
+import pandas as pd
+import numpy as np
+
+# Create a sample dataset
+data = {
+    'Student_ID': [1, 2, 3, 4, 5],
+    'Name': ['John', 'Alice', 'Bob', 'Emily', 'Michael'],
+    'Age': [20, 22, 21, np.nan, 23],  # introducing missing value
+    'Math_Score': [85, 90, 75, 60, 95],
+    'Science_Score': [78, 88, 82, 70, 92],
+    'English_Score': [82, np.nan, 79, 65, 90]  # introducing missing value
+}
+
+df = pd.DataFrame(data)
+
+2.
+# Check for missing values
+print("Missing values:")
+print(df.isnull().sum())
+
+# Handle missing values using mean imputation for numerical variables
+df['Age'].fillna(df['Age'].mean(), inplace=True)
+df['English_Score'].fillna(df['English_Score'].mean(), inplace=True)
+
+# Check for inconsistencies (none in this dataset)
+# You can perform data validation based on domain knowledge or business rules
+
+3.
+# Detect and handle outliers using z-score method for numeric variables
+from scipy import stats
+
+# Define z-score threshold
+z_threshold = 3
+
+# Calculate z-scores for numeric variables
+z_scores = np.abs(stats.zscore(df[['Age', 'Math_Score', 'Science_Score', 'English_Score']]))
+
+# Filter rows with outliers based on z-score threshold
+outliers = (z_scores > z_threshold).any(axis=1)
+print("Outliers:")
+print(df[outliers])
+
+# Remove outliers (or you can apply a transformation to them)
+df = df[~outliers]
+
